@@ -1,31 +1,32 @@
 import openai
 import streamlit as st
-import time
-import os
-
 from openai.error import AuthenticationError
+import numpy as np
+
 
 st.set_page_config(initial_sidebar_state='expanded')
 
+
 st.title("GrantGPT - :book: :chart_with_upwards_trend:")
 st.text(
-    "A bot which allows you to generate a grant, as well as analyze how good \nyour own writing is based on the given context!")
+    "A bot which allows you to generate a grant, as well as analyze how good \nyour own writing is based on the given "
+    "context!")
 
 st.subheader(":star2: Available features: ")
-generate = st.checkbox('Generate Grants', value=True)
-analyze = st.checkbox('Analyze Grants')
+analyze = st.checkbox('Analyze Grants', value=True)
+generate = st.checkbox('Generate Grants')
 st.divider()
 
 st.sidebar.title(":key: Instructions:")
 st.sidebar.text("1. Choose the feature you want to\n"
                 "   use above!\n"
                 "2. Input values into the text-areas\n"
-                "   - Generating:\n"
-                "      1. OpenAI API Key\n"
-                "      2. Context\n"
                 "   - Analyzing:\n"
                 "      1. Piece of writing\n"
                 "      2. Desired purpose\n"
+                "   - Generating:\n"
+                "      1. OpenAI API Key\n"
+                "      2. Context\n"
                 "3. Voila, you have your outcome!")
 st.sidebar.title(":sunglasses: About:")
 st.sidebar.text(f"""
@@ -45,14 +46,17 @@ st.sidebar.text(f"""
 """)
 
 # ----------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------------
 
-if (generate):
+if generate:
     st.subheader("Generating Grants :robot_face:")
     openai.api_key = st.text_input(
         label="For the generation process to work, since this bot uses gpt3, it requires an Open API Key to continue.",
         placeholder="Your key here...", type="password")
-    # openai.api_key = os.environ["OPENAI_API_KEY"]
 
+
+    # openai.api_key = os.environ["OPENAI_API_KEY"]
 
     def askGPT(text):
         response = openai.ChatCompletion.create(
@@ -61,13 +65,13 @@ if (generate):
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": text}
             ],
-            max_tokens = 400,
+            max_tokens=400,
             temperature=0.6
         )
         return response.choices[0].message.content
 
 
-    if (openai.api_key):
+    if openai.api_key:
         with st.form("my_form"):
             st.write("Grant Information")
 
@@ -97,10 +101,42 @@ if (generate):
             except AuthenticationError as e:
                 st.error("Please provide a valid OpenAI Api key!")
 
-if (analyze):
-    st.subheader('Analyzing Grants  :face_with_monocle:')
+    st.divider()
 
-st.divider()
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------------
+
+if analyze:
+    st.subheader('Analyzing Grants  :face_with_monocle:')
+    st.write('This analyzer only accurately works on grants related to FRC robotics teams since the '
+             'model is trained that way.')
+
+    with st.form("my_form2"):
+        st.write("Grant Information")
+
+        c1, c2 = st.columns([2, 2])
+        grantDraft = st.text_area("Grant you want to analyze:",
+                                  placeholder="...")
+        context = st.text_area(
+            "Provide a prompt or an overview:",
+            placeholder="More context can often give you more accurate results...")
+
+        submitted = st.form_submit_button("Submit")
+
+    if submitted:
+        with st.spinner("Analyzing..."):
+            generated_text = ""
+        #     TODO
+
+        st.success('Your analysis is ready!')
+        st.subheader(generated_text)
+
+    st.divider()
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------------
+
 st.markdown("<h6 style='text-align: center; padding: none;margin: none; '>Made with ❤ by</h6>", unsafe_allow_html=True)
 st.markdown("<h6 style='text-align: center; padding: none; margin: none;'>Sathvik Yechuri | 2023</h6>",
             unsafe_allow_html=True)
